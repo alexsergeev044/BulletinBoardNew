@@ -1,0 +1,23 @@
+{% extends 'flatpages/default.html' %}
+
+{% load custom_filter %}
+
+{% block title %}
+Response
+{% endblock title %}
+
+{% block content %}
+<h1>Отклик</h1>
+<hr>
+    <a href="{% url 'myresponse_list' %}">Мои отклики</a>
+    <a href="{% url 'adsresponse_list' %}">Отклики на мои объявления</a>
+    <a href="{% url 'ads_list' %}">Список объявлений</a>
+{% if request.user == response.author or request.user == response.ad.author %}
+    <a href="{% url 'response_edit' response.ad.pk response.pk %}">Редактировать</a>
+    <a href="{% url 'response_delete' response.ad.pk response.pk %}">Удалить</a>
+{% endif %}
+<hr>
+<h4>Дата публикации: {{ response.date|date:'d.m.Y H:i:s' }}</h4>
+<h4>Текст: {{ response.text }}</h4>
+
+{% endblock content %}

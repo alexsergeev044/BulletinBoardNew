@@ -1,0 +1,91 @@
+{% extends 'flatpages/default.html' %}
+
+{% load custom_filter %}
+
+{% block title %}
+ResponseList
+{% endblock title %}
+
+{% block content %}
+{% if request.resolver_match.url_name == 'myresponse_list' %}
+   <h1>Мои отклики (Стр. {{ page_obj.number }}/{{ page_obj.paginator.num_pages }})</h1>
+{% else %}
+   <h1>Отклики на мои объявления (Стр. {{ page_obj.number }}/{{ page_obj.paginator.num_pages }})</h1>
+{% endif %}
+   <hr>
+   <h3>Поиск откликов</h3>
+    <form action="" method="get">
+       {{ filterset.form.as_p }}
+       <input type="submit" value="Найти" />
+        {% if request.resolver_match.url_name == 'myresponse_list' %}
+            <a href="{% url 'myresponse_list' %}">Очистить фильтр</a>
+        {% elif request.resolver_match.url_name == 'adsresponse_list' %}
+            <a href="{% url 'adsresponse_list' %}">Очистить фильтр</a>
+        {% endif %}
+    </form>
+   <hr>
+   {% if responseList %}
+       <table align="center">
+           <tr>
+               <td>Дата публикации</td>
+               <td>Отклик</td>
+               <td>На объявление</td>
+               <td>Управление</td>
+           </tr>
+
+           {% for response in responseList %}
+           {% if request.resolver_match.url_name == 'myresponse_list' and request.user == response.author %}
+           <tr>
+               <td>{{ response.date|date:'d.m.Y H:i:s' }}</td>
+               <td><a href="{% url 'response_detail' response.ad.pk response.pk %}">{{ response.text|truncatewords:7 }}</a></td>
+               <td><a href="{% url 'ads_detail' response.ad.pk %}">{{ response.ad.title|truncatewords:7 }}</a></td>
+               <td>
+                   {% if response.accepted %}
+                   Отклик принят!
+                   {% else %}
+                   <a href="{% url 'response_edit' response.ad.pk response.pk %}">Редактировать</a>
+                   {% endif %}
+                   <a href="{% url 'response_delete' response.ad.pk response.pk %}">Удалить</a>
+               </td>
+           </tr>
+           {% elif request.resolver_match.url_name == 'adsresponse_list' and request.user == response.ad.author %}
+           <tr>
+               <td>{{ response.date|date:'d.m.Y H:i:s' }}</td>
+               <td><a href="{% url 'response_detail' response.ad.pk response.pk %}">{{ response.text|truncatewords:7 }}</a></td>
+               <td><a href="{% url 'ads_detail' response.ad.pk %}">{{ response.ad.title|truncatewords:7 }}</a></td>
+               <td>
+                   {% if response.accepted %}
+                   Отклик принят!
+                   {% else %}
+                   <a href="{% url 'response_accept' response.ad.pk response.pk %}">Принять</a>
+                   <a href="{% url 'response_delete' response.ad.pk response.pk %}">Удалить</a>
+                   {% endif %}
+               </td>
+           </tr>
+           {% endif %}
+           {% endfor %}
+       </table>
+   {% else %}
+       <h2>Откликов нет!</h2>
+   {% endif %}
+
+   {% if page_obj.has_previous %}
+       {# Для каждой ссылки пагинации указываем обработку через новый тег #}
+       <a href="?{% url_replace page=1 %}">1</a>
+       {% if page_obj.previous_page_number != 1 %}
+           ...
+           <a href="?{% url_replace page=page_obj.previous_page_number %}">{{ page_obj.previous_page_number }}</a>
+       {% endif %}
+   {% endif %}
+
+   {{ page_obj.number }}
+
+   {% if page_obj.has_next %}
+       <a href="?{% url_replace page=page_obj.next_page_number %}">{{ page_obj.next_page_number }}</a>
+       {% if paginator.num_pages != page_obj.next_page_number %}
+           ...
+           <a href="?{% url_replace page=page_obj.paginator.num_pages %}">{{ page_obj.paginator.num_pages }}</a>
+       {% endif %}
+   {% endif %}
+
+{% endblock content %}

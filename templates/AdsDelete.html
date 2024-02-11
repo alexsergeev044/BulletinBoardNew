@@ -1,0 +1,21 @@
+{% extends 'flatpages/default.html' %}
+
+{% block title %}
+AdsDelete
+{% endblock title %}
+
+{% block content %}
+{% if request.user == ads.author %}
+<h1>Удаление объявления</h1>
+<hr>
+<a href="{% url 'ads_detail' ads.pk %}">Назад</a> <a href="{% url 'ads_list' %}">Список объявлений</a>
+<hr>
+<form action="" method="post">
+    {% csrf_token %}
+    <p>Точно удалить "{{ object.title }}"?</p>
+    <input type="submit" value="Удалить" />
+</form>
+{% else %}
+    <h4>Кажется, у Вас нет доступа к редактированию данного объявления...</h4>
+{% endif %}
+{% endblock content %}

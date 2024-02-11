@@ -1,0 +1,20 @@
+{% extends 'flatpages/default.html' %}
+
+{% block content %}
+{% if request.user == ads.author or request.resolver_match.url_name == 'ads_create' %}
+    <h1>Объявление</h1>
+    <hr>
+    {% if ads.pk is not None %}
+    <a href="{% url 'ads_detail' ads.pk %}">Назад</a>
+    {% endif %}
+    <a href="{% url 'ads_list' %}">Список объявлений</a>
+    <hr>
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Сохранить" />
+    </form>
+{% else %}
+    <h4>Кажется, у Вас нет доступа к редактированию данного объявления...</h4>
+{% endif %}
+{% endblock content %}

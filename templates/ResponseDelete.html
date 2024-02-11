@@ -1,0 +1,20 @@
+{% extends 'flatpages/default.html' %}
+
+{% block content %}
+{% if request.user == response.author or request.user == response.ad.author %}
+<h1>Удаление отклика</h1>
+<hr>
+<a href="{% url 'response_detail' response.ad.pk response.pk %}">Вернуться к отклику</a>
+<a href="{% url 'myresponse_list' %}">Мои отклики</a>
+<a href="{% url 'adsresponse_list' %}">Отклики на мои объявления</a>
+<a href="{% url 'ads_list' %}">Список объявлений</a>
+<hr>
+<form action="" method="post">
+    {% csrf_token %}
+    <p>Точно удалить "{{ object }}"?</p>
+    <input type="submit" value="Удалить" />
+</form>
+{% else %}
+    <h4>Кажется, у Вас нет доступа к редактированию данного отклика...</h4>
+{% endif %}
+{% endblock content %}

@@ -1,0 +1,40 @@
+{% extends 'flatpages/default.html' %}
+
+{% block content %}
+{% if request.resolver_match.url_name != 'response_accept' %}
+    {% if request.user == response.author or request.resolver_match.url_name == 'response_create' %}
+        <h1>Отклик</h1>
+        <hr>
+        {% if response.pk is not None %}
+        <a href="{% url 'response_detail' response.ad.pk response.pk %}">Вернуться к отклику</a>
+        {% endif %}
+        <a href="{% url 'myresponse_list' %}">Мои отклики</a>
+        <a href="{% url 'adsresponse_list' %}">Отклики на мои объявления</a>
+        <a href="{% url 'ads_list' %}">Список объявлений</a>
+        <hr>
+        <form action="" method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" value="Сохранить" />
+        </form>
+    {% else %}
+    <h4>Нельзя редактировать чужой отклик...</h4>
+    {% endif %}
+{% elif request.user == response.ad.author and not request.accepted %}
+    <h1>Принять отклик</h1>
+    <hr>
+    <a href="{% url 'response_detail' response.ad.pk response.pk %}">Вернуться к отклику</a>
+    <a href="{% url 'myresponse_list' %}">Мои отклики</a>
+    <a href="{% url 'adsresponse_list' %}">Отклики на мои объявления</a>
+    <a href="{% url 'ads_list' %}">Список объявлений</a>
+    <hr>
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <p>Точно принять "{{ object }}"?</p>
+        <input type="submit" value="Принять" />
+    </form>
+{% else %}
+    <h4>Кажется, у Вас нет доступа к редактированию данного отклика...</h4>
+{% endif %}
+{% endblock content %}

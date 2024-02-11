@@ -1,0 +1,27 @@
+{% extends 'flatpages/default.html' %}
+
+{% load custom_filter %}
+
+{% block title %}
+Ad
+{% endblock title %}
+
+{% block content %}
+<h1>Объявление</h1>
+<hr>
+<a href="/">Список</a>
+{% if request.user == ads.author %}
+    <a href="{% url 'ads_edit' ads.pk %}">Редактировать</a>
+    <a href="{% url 'ads_delete' ads.pk %}">Удалить</a>
+{% elif request.user.is_authenticated %}
+    <a href="{% url 'response_create' ads.pk %}">Оставить отклик</a>
+{% endif %}
+<hr>
+<h4>Дата публикации: {{ ads.date|date:'d.m.Y H:i:s' }}</h4>
+<h4>Заголовок: {{ ads.title }}</h4>
+<h4>Категория: {{ ads.get_category_display }}</h4>
+<h4>-----</h4>
+{% autoescape off %}
+{{ ads.text }}
+{% endautoescape %}
+{% endblock content %}
